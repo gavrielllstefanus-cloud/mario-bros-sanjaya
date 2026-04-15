@@ -1,56 +1,42 @@
 let score = 0, kills = 0, isGameOver = false;
 let playerX = window.innerWidth / 2 - 30;
-let keys = {};
-let touchLeft = false, touchRight = false;
+let keys = {}, touchL = false, touchR = false;
 
 const player = document.getElementById("player");
 const sndMusic = document.getElementById("sndMusic");
-const sndKalah = document.getElementById("sndKalah");
-
-// Jalankan Musik saat buka web (interaksi pertama)
-window.addEventListener('click', () => { if(!isGameOver && sndMusic.paused) { /* Autoplay diatur di StartGame */ } }, {once: true});
 
 function startGame() {
     document.getElementById("start-menu").style.display = "none";
-    sndMusic.play();
+    sndMusic.play().catch(() => {}); // Play music
     
-    // Poin nambah tiap detik (+10)
-    setInterval(() => {
-        if (!isGameOver) { score += 10; updateUI(); }
-    }, 1000);
+    // Skor otomatis +10 tiap detik
+    setInterval(() => { if(!isGameOver) { score += 10; updateUI(); } }, 1000);
 
     gameLoop();
     spawnEnemy();
 }
 
-// Kontrol Keyboard
+// Kontrol
 document.addEventListener("keydown", (e) => keys[e.code] = true);
 document.addEventListener("keyup", (e) => keys[e.code] = false);
 
-// Kontrol HP
-const bLeft = document.getElementById("btn-left");
-const bRight = document.getElementById("btn-right");
-const bJump = document.getElementById("btn-jump");
-
-bLeft.ontouchstart = () => touchLeft = true; bLeft.ontouchend = () => touchLeft = false;
-bRight.ontouchstart = () => touchRight = true; bRight.ontouchend = () => touchRight = false;
-bJump.ontouchstart = jump;
+const bL = document.getElementById("btn-left"), bR = document.getElementById("btn-right"), bJ = document.getElementById("btn-jump");
+bL.ontouchstart = () => touchL = true; bL.ontouchend = () => touchL = false;
+bR.ontouchstart = () => touchR = true; bR.ontouchend = () => touchR = false;
+bJ.ontouchstart = jump;
 
 function gameLoop() {
     if (isGameOver) return;
-
-    let move = false;
-    if (keys["ArrowLeft"] || touchLeft) { playerX -= 6; move = true; }
-    if (keys["ArrowRight"] || touchRight) { playerX += 6; move = true; }
+    let walk = false;
+    if (keys["ArrowLeft"] || touchL) { playerX -= 5; walk = true; }
+    if (keys["ArrowRight"] || touchR) { playerX += 5; walk = true; }
     if (keys["Space"] || keys["ArrowUp"]) jump();
 
-    // Batas Layar
     if (playerX < 0) playerX = 0;
     if (playerX > window.innerWidth - 60) playerX = window.innerWidth - 60;
-
     player.style.left = playerX + "px";
-    if (move) player.classList.add("walking"); else player.classList.remove("walking");
-
+    
+    if (walk) player.classList.add("walking"); else player.classList.remove("walking");
     requestAnimationFrame(gameLoop);
 }
 
@@ -68,55 +54,57 @@ function spawnEnemy() {
     const lvl = Math.floor(Math.random() * 3) + 1;
     enemy.className = `enemy lvl${lvl}`;
     
-    let side = Math.random() > 0.5 ? -100 : window.innerWidth + 20;
+    let side = Math.random() > 0.5 ? -100 : window.innerWidth + 50;
     enemy.style.left = side + "px";
     document.getElementById("enemy-container").appendChild(enemy);
 
-    let speed = lvl === 1 ? 3 : (lvl === 2 ? 4.5 : 2); // Bos pelan
+    let speed = lvl === 1 ? 2.5 : (lvl === 2 ? 3.5 : 1.5);
     let dir = side < 0 ? 1 : -1;
+    let hasShot = false; // Biar bos cuma nembak 1x
 
-    let moveInterval = setInterval(() => {
-        if (isGameOver) { clearInterval(moveInterval); return; }
+    let moveInt = setInterval(() => {
+        if (isGameOver) { clearInterval(moveInt); return; }
         let eX = parseInt(enemy.style.left);
         enemy.style.left = (eX + (speed * dir)) + "px";
 
-        // Bos Level 3 Nembak Putih
-        if (lvl === 3 && Math.random() < 0.015) createBullet(eX, dir);
+        // Bos Level 3 Nembak Sekali saja pas di tengah
+        if (lvl === 3 && !hasShot && Math.abs(eX - window.innerWidth/2) < 100) {
+            createBullet(eX, dir);
+            hasShot = true;
+        }
 
-        // Deteksi Tabrakan
+        // Cek Tabrakan
         let p = player.getBoundingClientRect(), e = enemy.getBoundingClientRect();
         if (p.left < e.right && p.right > e.left && p.top < e.bottom && p.bottom > e.top) {
-            if (p.bottom < e.top + 35) {
-                // Injak Kepala
-                let bonus = lvl === 1 ? 50 : (lvl === 2 ? 100 : 200);
-                score += bonus; kills++;
+            if (p.bottom < e.top + 30) {
+                // INJAK MATI
+                let pts = lvl === 1 ? 50 : (lvl === 2 ? 100 : 200);
+                score += pts; kills++;
                 document.getElementById(`sndLvl${lvl}`).play();
                 updateUI();
                 enemy.style.transform = "scaleY(0.1)";
-                clearInterval(moveInterval);
+                clearInterval(moveInt);
                 setTimeout(() => enemy.remove(), 200);
             } else { endGame(); }
         }
-
-        if (eX < -200 || eX > window.innerWidth + 200) { enemy.remove(); clearInterval(moveInterval); }
+        if (eX < -300 || eX > window.innerWidth + 300) { enemy.remove(); clearInterval(moveInt); }
     }, 20);
-
-    setTimeout(spawnEnemy, Math.max(700, 2600 - (kills * 50)));
+    setTimeout(spawnEnemy, 3000 - (kills * 20)); // Spawn pelan2
 }
 
 function createBullet(x, dir) {
     const b = document.createElement("div");
     b.className = "bullet";
-    b.style.left = x + "px"; b.style.bottom = "110px";
+    b.style.left = x + "px"; b.style.bottom = "130px";
     document.getElementById("game-container").appendChild(b);
     document.getElementById("sndTembak").play();
 
     let bMove = setInterval(() => {
         let bX = parseInt(b.style.left);
-        b.style.left = (bX + (4 * dir)) + "px"; // Peluru pelan
+        b.style.left = (bX + (3 * dir)) + "px"; // Peluru sangat pelan
         let p = player.getBoundingClientRect(), br = b.getBoundingClientRect();
         if (br.left < p.right && br.right > p.left && br.top < p.bottom && br.bottom > p.top) endGame();
-        if (bX < -50 || bX > window.innerWidth + 50) { b.remove(); clearInterval(bMove); }
+        if (bX < -100 || bX > window.innerWidth + 100) { b.remove(); clearInterval(bMove); }
     }, 20);
 }
 
@@ -129,7 +117,7 @@ function endGame() {
     if (isGameOver) return;
     isGameOver = true;
     sndMusic.pause();
-    sndKalah.play();
+    document.getElementById("sndKalah").play();
     document.getElementById("game-over").style.display = "flex";
     document.getElementById("final-score").innerText = score;
 }
