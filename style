@@ -1,0 +1,53 @@
+body {
+    margin: 0; background: #111;
+    display: flex; justify-content: center; align-items: center;
+    height: 100vh; font-family: 'Courier New', monospace;
+    overflow: hidden; touch-action: manipulation;
+}
+
+#game-container {
+    width: 600px; height: 400px; background: #5c94fc;
+    position: relative; border: 4px solid #fff; overflow: hidden;
+}
+
+#score { position: absolute; top: 10px; left: 10px; color: white; font-weight: bold; z-index: 100; font-size: 20px; }
+
+/* PLAYER: MUKA AIB */
+#player {
+    width: 50px; height: 50px;
+    background-image: url('mario-aib.png');
+    background-size: contain; background-repeat: no-repeat;
+    position: absolute; bottom: 0; left: 275px; z-index: 10;
+}
+
+/* MENU & UI */
+#start-menu, #game-over {
+    position: absolute; width: 100%; height: 100%; background: rgba(0,0,0,0.85);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    color: white; z-index: 200;
+}
+#game-over { display: none; }
+
+button {
+    padding: 10px 25px; background: #ff4757; color: white; 
+    border: none; cursor: pointer; font-size: 18px; font-weight: bold;
+}
+
+/* MUSUH */
+.enemy { position: absolute; bottom: 0; }
+.lvl1 { width: 30px; height: 30px; background: #2ed573; border-radius: 5px; } /* Hijau */
+.lvl2 { width: 45px; height: 45px; background: #eccc68; border-radius: 5px; } /* Kuning */
+.lvl3 { width: 45px; height: 45px; background: #ff4757; border-radius: 5px; } /* Merah Penembak */
+
+.bullet { width: 12px; height: 12px; background: #2f3542; border-radius: 50%; position: absolute; }
+
+/* ANIMASI MATI */
+.die-anim { animation: die-effect 0.5s forwards; }
+@keyframes die-effect { 100% { transform: rotate(720deg) scale(0); opacity: 0; } }
+
+/* LONCAT */
+.jumping { animation: jump-logic 0.6s ease-out; }
+@keyframes jump-logic {
+    0%, 100% { bottom: 0; }
+    50% { bottom: 280px; } /* Loncat Tinggi banget */
+}
