@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MARIO TROLL - AMBATUKAM EDITION</title>
+    <title>MARIO TROLL EDITION</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,8 +12,8 @@
 
         <div id="start-menu">
             <h1 class="pixel-text">MARIO TROLL</h1>
-            <p>Injak kepalanya biar Ambatukam!</p>
-            <button onclick="startGame()">START MISSION</button>
+            <p>Injak kepalanya, dengerin suaranya!</p>
+            <button onclick="startGame()">PLAY GAME</button>
         </div>
 
         <div id="player"></div>
@@ -23,12 +23,14 @@
         <div id="game-over">
             <h1>WASTED</h1>
             <p>Total Kill: <span id="final-score">0</span></p>
-            <button onclick="location.reload()">TRY AGAIN</button>
+            <button onclick="location.reload()">COBA LAGI</button>
         </div>
     </div>
 
     <audio id="audioJump" src="jump.mp3"></audio>
-    <audio id="audioDead" src="ambatukam.mp3"></audio>
+    <audio id="audioLevel1" src="sound 1.mp3"></audio>
+    <audio id="audioLevel2" src="sound 2.mp3"></audio>
+    <audio id="audioLevel3" src="sound 3.mp3"></audio>
     <audio id="audioShoot" src="shoot.mp3"></audio>
 
     <script src="script.js"></script>
