@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MARIO TROLL - AMBATUKAM EDITION</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="score">Kills: 0</div>
+
+        <div id="start-menu">
+            <h1 class="pixel-text">MARIO TROLL</h1>
+            <p>Injak kepalanya biar Ambatukam!</p>
+            <button onclick="startGame()">START MISSION</button>
+        </div>
+
+        <div id="player"></div>
+
+        <div id="enemy-container"></div>
+
+        <div id="game-over">
+            <h1>WASTED</h1>
+            <p>Total Kill: <span id="final-score">0</span></p>
+            <button onclick="location.reload()">TRY AGAIN</button>
+        </div>
+    </div>
+
+    <audio id="audioJump" src="jump.mp3"></audio>
+    <audio id="audioDead" src="ambatukam.mp3"></audio>
+    <audio id="audioShoot" src="shoot.mp3"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
